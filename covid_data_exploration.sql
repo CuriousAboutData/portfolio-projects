@@ -28,22 +28,22 @@ SELECT Location, MAX(total_cases) as HighestInfectionCount, Population,
 FROM dbo.CovidDeaths
 WHERE continent <> ''
 GROUP BY Location, Population
-ORDER BY InfectionPercentage DESC
+ORDER BY infection_percentage DESC
 
 SELECT Location, MAX(CAST(total_deaths AS float)) as total_deaths
 FROM CovidDeaths
 WHERE continent <> ''
 GROUP BY Location
-ORDER BY TotalDeaths DESC
+ORDER BY total_deaths DESC
 
--- break things down by continent
+-- Let's break things down by continent
 -- continents with highest death count 
 
 SELECT continent, MAX(CAST(total_deaths AS float)) as total_deaths
 FROM CovidDeaths
 WHERE continent <> ''
 GROUP BY continent
-ORDER BY TotalDeaths DESC
+ORDER BY total_deaths DESC
 
 -- global numbers
 
@@ -57,7 +57,7 @@ ORDER BY 1,2
 
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
 	   SUM(CONVERT(float, vac.new_vaccinations)) OVER (PARTITION BY dea.location 
-ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
+													ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
 FROM CovidDeaths dea
 	JOIN CovidVaccinations vac
 ON dea.location = vac.location
@@ -72,7 +72,7 @@ AS
 (
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
 	   SUM(CONVERT(float, vac.new_vaccinations)) OVER (PARTITION BY dea.location 
-ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
+													ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
 FROM CovidDeaths dea
 	JOIN CovidVaccinations vac
 ON dea.location = vac.location
@@ -98,7 +98,7 @@ rolling_people_vaccinated numeric
 INSERT INTO #people_vaccinated
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
 	   SUM(CONVERT(float, vac.new_vaccinations)) OVER (PARTITION BY dea.location 
-ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
+													ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
 FROM CovidDeaths dea
 	JOIN CovidVaccinations vac
 ON dea.location = vac.location
@@ -110,7 +110,7 @@ FROM #people_vaccinated
 CREATE VIEW people_vaccinated AS
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations,
 	   SUM(CONVERT(float, vac.new_vaccinations)) OVER (PARTITION BY dea.location 
-ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
+													ORDER BY dea.location, dea.date) AS rolling_people_vaccinated
 FROM CovidDeaths dea
 	JOIN CovidVaccinations vac
 ON dea.location = vac.location
